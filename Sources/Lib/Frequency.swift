@@ -16,4 +16,8 @@ public struct Frequency<T> where T: Hashable {
   public func sorted( by: ((key:T, count:Int),(key:T, count:Int)) -> Bool ) -> [(T,Int)] {
     return dictionary.sorted { by( (key: $0.key, count: $0.value), (key: $1.key, count: $1.value) ) }
   }
+
+  public var count: Int {
+    return dictionary.count
+  }
 }
