@@ -1,8 +1,7 @@
 import Foundation
 import Lib
 
-var jumps = STDIN.map { Int($0)! }
-var part1 = jumps
+let jumps = STDIN.map { Int($0)! }
 
 func part1( _ jumps: [Int] ) -> Int {
   var jumps = jumps
