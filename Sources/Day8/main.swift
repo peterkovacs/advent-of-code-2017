@@ -12,7 +12,6 @@ struct Instruction {
   let condition: Condition
 
   static let register = oneOrMore( alphanumeric )
-  static let number = { Int($0)! } <^> ( extend <^> char("-" as Character) <*> oneOrMore(digit) ) <|> { Int($0)! } <^> oneOrMore(digit)
   static let command: Parser<Character, Command> = 
     .init(lift: { register, number in 
             return { 
@@ -21,8 +20,8 @@ struct Instruction {
               return (registers, max($1, registers[register, default: 0]))
             }
           },
-          register <* string("inc").between( oneOrMore(whitespace), oneOrMore(whitespace) ), 
-          number) <|>
+          register <* string("inc").between( whitespaces ), 
+          integer) <|>
     .init(lift: { register, number in 
             return { 
               var registers = $0
@@ -30,34 +29,34 @@ struct Instruction {
               return (registers, max($1, registers[register, default: 0]))
             }
           },
-          register <* string("dec").between( oneOrMore(whitespace), oneOrMore(whitespace) ), 
-          number)
+          register <* string("dec").between( whitespaces ), 
+          integer)
 
   static let condition: Parser<Character, Condition> = { 
     let lt =
       Parser<Character,Condition>(lift: { register, number in { registers in registers[register, default:0] < number } },
           register.between( string(" if " ), string( " < " ) ),
-          number )
+          integer )
     let gt =
       Parser<Character,Condition>(lift: { register, number in { registers in registers[register, default:0] > number } },
           register.between( string(" if " ), string( " > " ) ),
-          number )
+          integer )
     let lte =
       Parser<Character,Condition>(lift: { register, number in { registers in registers[register, default:0] <= number } },
           register.between( string(" if " ), string( " <= " ) ),
-          number )
+          integer )
     let gte = 
       Parser<Character,Condition>(lift: { register, number in { registers in registers[register, default:0] >= number } },
           register.between( string(" if " ), string( " >= " ) ),
-          number )
+          integer )
     let eq =
       Parser<Character,Condition>(lift: { register, number in { registers in registers[register, default:0] == number } },
           register.between( string(" if " ), string( " == " ) ),
-          number )
+          integer )
     let neq = 
       Parser<Character,Condition>(lift: { register, number in { registers in registers[register, default:0] != number } },
           register.between( string(" if " ), string( " != " ) ),
-          number )
+          integer )
 
     return lt <|> gt <|> lte <|> gte <|> eq <|> neq
   }()
