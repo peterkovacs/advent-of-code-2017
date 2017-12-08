@@ -4,7 +4,7 @@ import FootlessParser
 //import CommonCrypto
 
 
-typealias Command = ([String:Int],Int)->([String:Int], Int)
+typealias Command = ([String:Int])->[String:Int]
 typealias Condition = ([String:Int])->Bool
 
 struct Instruction {
@@ -17,7 +17,8 @@ struct Instruction {
             return { 
               var registers = $0
               registers[register, default: 0] += number
-              return (registers, max($1, registers[register, default: 0]))
+              registers["maximum"] = max( registers[register, default: 0], registers["maximum", default: 0] )
+              return registers
             }
           },
           register <* string("inc").between( whitespaces ), 
@@ -26,7 +27,8 @@ struct Instruction {
             return { 
               var registers = $0
               registers[register, default: 0] -= number
-              return (registers, max($1, registers[register, default: 0]))
+              registers["maximum"] = max( registers[register, default: 0], registers["maximum", default: 0] )
+              return registers
             }
           },
           register <* string("dec").between( whitespaces ), 
@@ -68,13 +70,13 @@ struct Instruction {
 }
 
 let instructions = STDIN.map { Instruction.parse(line: $0) }
-let (registers,m) = instructions.reduce(([String:Int](), 0)) { result, instruction in
-  let (registers, max) = result
+var registers = instructions.reduce([String:Int]()) { registers, instruction in
   if instruction.condition(registers) {
-    return instruction.command(registers, max)
+    return instruction.command(registers)
   } else {
-    return (registers, max)
+    return registers
   }
 }
+let maximum = registers.remove( at: registers.index(forKey:"maximum")! )
 print(registers.max(by: {$0.1 < $1.1}) as Any)
-print(m)
+print(maximum)
