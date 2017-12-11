@@ -10,42 +10,29 @@ func steps(to: (Int, Int)) -> Int {
   return x + y / 2
 }
 
-func part1(input: String) -> (Int,Int) {
-  let n = { _ in { (a:(Int,Int)) in ( a.0, a.1 + 2 ) } } <^> string( "n" )
-  let ne = { _ in { (a:(Int,Int)) in ( a.0 + 1, a.1 + 1 ) } } <^> string( "ne" )
-  let nw = { _ in { (a:(Int,Int)) in ( a.0 - 1, a.1 + 1 ) } } <^> string( "nw" )
-  let s = { _ in { (a:(Int,Int)) in ( a.0, a.1 - 2 ) } } <^> string( "s" )
-  let se = { _ in { (a:(Int,Int)) in ( a.0 + 1, a.1 - 1 ) } } <^> string( "se" )
-  let sw = { _ in { (a:(Int,Int)) in ( a.0 - 1, a.1 - 1 ) } } <^> string( "sw" )
-  let parser = separated( ne <|> nw <|> n <|> se <|> sw <|> s, by: char(","), initial: (0,0), accumulator: { $1( $0 ) } )
+typealias Point = (Int,Int,Int)
+func parse(input: String, combine: @escaping (Point)->Point ) -> Point {
 
-  return try! parse( parser, input)
-}
-
-func part2(input: String) -> (Int, Int, Int) {
-
-  func compare( _ a: Int, _ b: Int, _ c: Int ) -> (Int, Int, Int) {
-    let x = steps(to: (a,b))
-    if x > c {
-      return (a,b,x)
-    } else {
-      return (a,b,c)
-    }
-  }
-
-  let n = { _ in { (a:(Int,Int,Int)) in compare( a.0, a.1 + 2, a.2) } } <^> string( "n" )
-  let ne = { _ in { (a:(Int,Int,Int)) in compare( a.0 + 1, a.1 + 1, a.2) } } <^> string( "ne" )
-  let nw = { _ in { (a:(Int,Int,Int)) in compare( a.0 - 1, a.1 + 1, a.2) } } <^> string( "nw" )
-  let s = { _ in { (a:(Int,Int,Int)) in compare( a.0, a.1 - 2, a.2) } } <^> string( "s" )
-  let se = { _ in { (a:(Int,Int,Int)) in compare( a.0 + 1, a.1 - 1, a.2) } } <^> string( "se" )
-  let sw = { _ in { (a:(Int,Int,Int)) in compare( a.0 - 1, a.1 - 1, a.2) } } <^> string( "sw" )
+  let n = { _ in { (a:Point) in combine((a.0, a.1 + 2, a.2)) } } <^> string( "n" )
+  let ne = { _ in { (a:Point) in combine((a.0 + 1, a.1 + 1, a.2)) } } <^> string( "ne" )
+  let nw = { _ in { (a:Point) in combine((a.0 - 1, a.1 + 1, a.2)) } } <^> string( "nw" )
+  let s = { _ in { (a:Point) in combine((a.0, a.1 - 2, a.2)) } } <^> string( "s" )
+  let se = { _ in { (a:Point) in combine((a.0 + 1, a.1 - 1, a.2)) } } <^> string( "se" )
+  let sw = { _ in { (a:Point) in combine((a.0 - 1, a.1 - 1, a.2)) } } <^> string( "sw" )
   let parser = separated( ne <|> nw <|> n <|> se <|> sw <|> s, by: char(","), initial: (0,0,0), accumulator: { $1( $0 ) } )
 
-  return try! parse( parser, input)
+  return try! FootlessParser.parse( parser, input)
 }
 
 let input = readLine(strippingNewline: true)!
-print( steps(to: part1(input: input)) )
-print( part2(input: input).2 )
+print( parse(input: input) { ( $0.0, $0.1, steps(to: ($0.0, $0.1)) ) }.2 )
+print( parse(input: input) { (a: Point) in
+    let x = steps(to: (a.0, a.1))
+    if x > a.2 {
+      return (a.0, a.1, x)
+    } else {
+      return a
+    }
+  }.2 )
 
 
