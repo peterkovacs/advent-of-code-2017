@@ -14,7 +14,6 @@ struct Firewall {
 
   func severity( at picoseconds: Int, delay: Int = 0 ) -> Int? {
     if let period = layers[picoseconds] {
-
       if (picoseconds + delay) % (period * 2 - 2) == 0 {
         return picoseconds * period
       }
