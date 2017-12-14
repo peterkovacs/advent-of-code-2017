@@ -67,10 +67,8 @@ public struct KnotHash {
   }
 
   public subscript( _ index: Index ) -> Int {
-    // each element of the hash represents 8 bits
     let i = index / 8
-    let j = index % 8
-    let offset = [ 0b10000000, 0b01000000, 0b00100000, 0b00010000, 0b00001000, 0b00000100, 0b00000010, 0b00000001 ]
-    return (hash[i] & offset[j]) >> (7 - j)
+    let j = 7 - (index % 8)
+    return (hash[i] & (1 << j)) >> j
   }
 }
