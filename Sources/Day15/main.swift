@@ -1,7 +1,5 @@
 import Foundation
 import Lib
-//import FootlessParser
-//import CommonCrypto
 
 struct Generator: Sequence, IteratorProtocol {
   let factor: Int
