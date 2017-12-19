@@ -1,14 +1,12 @@
 
 public struct Coordinate {
-  let x, y: Int
+  public let x, y: Int
+  public typealias Direction = KeyPath<Coordinate, Coordinate>
 
   public var right: Coordinate { return Coordinate( x: x + 1, y: y ) }
   public var left: Coordinate { return Coordinate( x: x - 1, y: y ) }
-  public var up: Coordinate { return Coordinate( x: x, y: y + 1 ) }
-  public var down: Coordinate { return Coordinate( x: x, y: y - 1 ) }
-
-  public func x( _ newValue: Int ) -> Coordinate { return Coordinate( x: newValue, y: y ) }
-  public func y( _ newValue: Int ) -> Coordinate { return Coordinate( x: x, y: newValue ) }
+  public var up: Coordinate { return Coordinate( x: x, y: y - 1 ) }
+  public var down: Coordinate { return Coordinate( x: x, y: y + 1 ) }
 
   public func neighbors(limitedBy: Int) -> [Coordinate] {
     return neighbors(limitedBy: limitedBy, and: limitedBy )
@@ -20,6 +18,24 @@ public struct Coordinate {
 
   public func isValid( x: Int, y: Int ) -> Bool {
     return self.x >= 0 && self.x < x && self.y >= 0 && self.y < y
+  }
+
+  public func neighbors( limitedBy: Int, traveling: Direction ) -> [Coordinate] {
+    switch traveling {
+    case \Coordinate.down, \Coordinate.up:
+      return [ left, right ].filter { $0.isValid( x: limitedBy, y: limitedBy ) }
+    case \Coordinate.left, \Coordinate.right:
+      return [ down, up ].filter { $0.isValid( x: limitedBy, y: limitedBy ) }
+    default: fatalError()
+    }
+  }
+
+  public func direction(to: Coordinate) -> Direction {
+    if abs(self.x - to.x) > abs(self.y - to.y) {
+      return self.x > to.x ? \Coordinate.left : \Coordinate.right
+    } else {
+      return self.y > to.y ? \Coordinate.up : \Coordinate.down
+    }
   }
 
   public init( x: Int, y: Int ) {
