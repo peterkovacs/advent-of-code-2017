@@ -2,7 +2,7 @@ import Foundation
 import Lib
 
 let size = 201
-var grid = Grid<Character>( STDIN.flatMap{ $0 }, size: 201 )!
+var grid = Grid<Character>( STDIN.flatMap{ $0 }, count: 201 )!
 var coordinate = Coordinate( x: 131, y: 0 )
 var direction = \Coordinate.down
 var steps = 1

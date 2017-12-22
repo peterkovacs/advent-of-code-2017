@@ -11,11 +11,11 @@ let memory = (0..<128).map { r in
 let used = memory.reduce(0) { $0 + $1.hash.reduce(0) { $0 + $1.bits } }
 print( used )
 
-var bits = Grid( memory.flatMap { row in (0..<128).map { row[$0] == 1 } }, size: 128 )!
+var bits = Grid( memory.flatMap { row in (0..<128).map { row[$0] == 1 } }, count: 128 )!
 var group = 0
 
-for i in 0..<bits.size {
-  for j in 0..<bits.size {
+for i in 0..<bits.count {
+  for j in 0..<bits.count {
     if bits[x: i, y: j] {
       group += 1
 
@@ -25,7 +25,7 @@ for i in 0..<bits.size {
         let next = work.removeFirst()
 
         bits[next] = false
-        let neighbors = next.neighbors(limitedBy: bits.size)
+        let neighbors = next.neighbors(limitedBy: bits.count)
 
         for c in neighbors {
           guard bits[c] else { continue }
