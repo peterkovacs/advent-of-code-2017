@@ -46,6 +46,36 @@ public struct Coordinate {
   }
 }
 
+public extension Coordinate {
+  public static func turn(left: Direction) -> Direction {
+    switch left {
+    case \Coordinate.down: return \Coordinate.right
+    case \Coordinate.up: return \Coordinate.left
+    case \Coordinate.right: return \Coordinate.up
+    case \Coordinate.left: return \Coordinate.down
+    default: return left
+    }
+  }
+  public static func turn(right: Direction) -> Direction {
+    switch right {
+    case \Coordinate.down: return \Coordinate.left
+    case \Coordinate.up: return \Coordinate.right
+    case \Coordinate.right: return \Coordinate.down
+    case \Coordinate.left: return \Coordinate.up
+    default: return right
+    }
+  }
+  public static func turn(around: Direction) -> Direction {
+    switch around {
+    case \Coordinate.down: return \Coordinate.up
+    case \Coordinate.up: return \Coordinate.down
+    case \Coordinate.right: return \Coordinate.left
+    case \Coordinate.left: return \Coordinate.right
+    default: return around
+    }
+  }
+}
+
 public struct Grid<T>: Sequence {
 
   public struct Iterator: IteratorProtocol {
@@ -143,6 +173,14 @@ public struct Grid<T>: Sequence {
 
   public func makeIterator() -> Iterator {
     return Iterator(grid: self, coordinate: Coordinate(x: 0, y: 0))
+  }
+
+  public mutating func copy( grid: Grid<T>, origin: Coordinate ) {
+    for y in origin.y..<(origin.y+grid.count) {
+      for x in origin.x..<(origin.x+grid.count) {
+        self[x: x, y: y] = grid[x: x - origin.x, y: y - origin.y]
+      }
+    }
   }
 }
 

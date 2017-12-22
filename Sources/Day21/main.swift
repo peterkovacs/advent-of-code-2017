@@ -29,14 +29,6 @@ func expand( pattern: Grid<Int> ) -> Grid<Int> {
   return pattern
 }
 
-func copy( grid: Grid<Int>, into: inout Grid<Int>, origin: Coordinate ) {
-  for y in origin.y..<(origin.y+grid.count) {
-    for x in origin.x..<(origin.x+grid.count) {
-      into[x: x, y: y] = grid[x: x - origin.x, y: y - origin.y]
-    }
-  }
-}
-
 func expand( grid: Grid<Int> ) -> Grid<Int> {
   var result: Grid<Int>
 
@@ -47,7 +39,7 @@ func expand( grid: Grid<Int> ) -> Grid<Int> {
     for y in stride(from: 0, to: grid.count, by: 2) {
       for x in stride(from: 0, to: grid.count, by: 2) {
         let g = grid[x: x..<(x+2), y: y..<(y+2)]!
-        copy(grid: expand(pattern: g), into: &result, origin: Coordinate( x: x * 3 / 2, y: y * 3 / 2 ))
+        result.copy(grid: expand(pattern: g), origin: Coordinate( x: x * 3 / 2, y: y * 3 / 2 ))
       }
     }
   } else {
@@ -57,7 +49,7 @@ func expand( grid: Grid<Int> ) -> Grid<Int> {
     for y in stride(from: 0, to: grid.count, by: 3) {
       for x in stride(from: 0, to: grid.count, by: 3) {
         let g = grid[x: x..<(x+3), y: y..<(y+3)]!
-        copy(grid: expand(pattern: g), into: &result, origin: Coordinate( x: x * 4 / 3, y: y * 4 / 3 ))
+        result.copy(grid: expand(pattern: g), origin: Coordinate( x: x * 4 / 3, y: y * 4 / 3 ))
       }
     }
   }
@@ -82,13 +74,13 @@ func print<T: CustomStringConvertible>( grid g: Grid<T> ) {
   print()
 }
 
-for i in 0..<5 {
+for _ in 0..<5 {
   grid = expand( grid: grid )
 }
 
 print( grid.reduce(0, +) )
 
-for i in 5..<18 {
+for _ in 5..<18 {
   grid = expand( grid: grid )
 }
 
